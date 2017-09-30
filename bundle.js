@@ -55,16 +55,26 @@ dispatch.on("render.coverage", function (filedata) {
 
     let createDataTree = filedata => {
         let key
-        let tree = {}
+        let tree = {
+            "children": {},
+            "coveredLines": 0,
+            "totalLines": 0
+        }
 
-        let parseKey = function (root, key, dataobject) {
+        let parseKey = function (root, key, dataObject) {
             let dirname = (key.match(/^\w*\//) || [ "" ])[0]
             let remainder = (key.match(/^\w*\/(.*)/) || [ "" ])[1]
             if (dirname) {
-                root[dirname] = root[dirname] || {}
-                root[dirname] = parseKey(root[dirname], remainder, dataobject)
+                root.children[dirname] = root.children[dirname] || {
+                    "children": {},
+                    "coveredLines": 0,
+                    "totalLines": 0
+                }
+                root.children[dirname] = parseKey(root.children[dirname], remainder, dataObject)
+                root.coveredLines += dataObject.coveredLines
+                root.totalLines += dataObject.totalLines
             } else {
-                root[key] = dataobject
+                root.children[key] = dataObject
             }
             return root
         }
