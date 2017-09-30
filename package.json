@@ -1,0 +1,35 @@
+{
+    "name": "guypursey-d3-testing-test-coverage-visualisation",
+    "version": "0.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepare": "browserify main.js > bundle.js",
+        "prestart": "browserify main.js > bundle.js",
+        "start": "http-server"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+"
+    },
+    "keywords": [
+        "d3",
+        "javascript",
+        "visualisation",
+        "coverage"
+    ],
+    "author": "Guy Pursey <guypursey@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": ""
+    },
+    "homepage": "",
+    "dependencies": {
+        "d3": "4.10.0"
+    },
+    "devDependencies": {
+        "browserify": "14.1.0",
+        "http-server": "0.9.0"
+    }
+}
