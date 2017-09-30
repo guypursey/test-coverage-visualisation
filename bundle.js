@@ -5,7 +5,10 @@
 
 */
 const d3 = require("d3")
-const dispatch = d3.dispatch("load", "projectchange")
+const dispatch = d3.dispatch("load", "projectchange", "render")
+
+const width = window.innerWidth
+const height = window.innerHeight
 
 d3.json("filelist.json", function (error, datafiles) {
     if (error) throw error
@@ -18,9 +21,7 @@ d3.json("filelist.json", function (error, datafiles) {
 
 dispatch.on("load.menu", function (files) {
 
-    console.log("menu loading", files)
-    let select = d3.select("body")
-        .append("div")
+    let select = d3.select("div#chartId")
         .append("select")
             .on("change", function () { dispatch.call("projectchange", this, files.get(this.value))})
 
@@ -30,10 +31,53 @@ dispatch.on("load.menu", function (files) {
             .attr("value", d => d.filename)
             .text(d => d.label)
 
+    let svg = d3.select("div#chartId")
+       .append("div")
+       .classed("svg-container", true)
+       .append("svg")
+       .attr("preserveAspectRatio", "xMinYMin meet")
+       .attr("viewBox", `0 0 ${width} ${height}`)
+       .classed("svg-content-responsive", true)
+
     dispatch.on("projectchange.menu", function (file) {
         console.log("projectchange.menu trigger", file)
         select.property("value", file.filename)
+
+        d3.json(`/data/${file.filename}`, function (error, data) {
+            dispatch.call("render", this, data)
+        })
     })
+
+})
+
+dispatch.on("render.coverage", function (filedata) {
+    console.log(filedata)
+
+    let createDataTree = filedata => {
+        let key
+        let tree = {}
+
+        let parseKey = function (root, key, dataobject) {
+            let dirname = (key.match(/^\w*\//) || [ "" ])[0]
+            let remainder = (key.match(/^\w*\/(.*)/) || [ "" ])[1]
+            if (dirname) {
+                root[dirname] = root[dirname] || {}
+                root[dirname] = parseKey(root[dirname], remainder, dataobject)
+            } else {
+                root[key] = dataobject
+            }
+            return root
+        }
+
+        for (key in filedata) {
+            parseKey(tree, key, filedata[key])
+        }
+        //console.log(tree)
+        return tree
+    }
+
+    console.log(createDataTree(filedata))
+
 
 })
 
