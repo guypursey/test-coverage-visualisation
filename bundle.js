@@ -119,7 +119,15 @@ dispatch.on("render.coverage", function (filedata) {
 
     let bars = svg.selectAll(".bar")
             .data(filearray)
-        .enter().append("rect")
+
+    bars.exit()
+        .remove()
+
+    bars
+        .attr("y", d => y(d.filename))
+        .attr("height", y.bandwidth())
+
+    bars.enter().append("rect")
             .attr("class", d => `bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
             .attr("x", x(0))
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
