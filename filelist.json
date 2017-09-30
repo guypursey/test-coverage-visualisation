@@ -1,0 +1,10 @@
+[
+    {
+        "label": "original data source",
+        "filename": "small-dataset.json"
+    },
+    {
+        "label": "larger data source",
+        "filename": "large-dataset.json"
+    }
+]
