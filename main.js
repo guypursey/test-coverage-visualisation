@@ -81,6 +81,49 @@ dispatch.on("load.menu", function (files) {
 dispatch.on("render.coverage", function (filedata) {
     console.log(filedata)
 
-    console.log(createDataTree(filedata))
+    let treedata = createDataTree(filedata)
+
+    console.log(treedata)
+
+    let key
+    let filearray = []
+    for (key in filedata) {
+        filedata[key].filename = key
+        filearray.push(filedata[key])
+    }
+
+    console.log(filearray)
+
+    let margin = {
+        top: 20,
+        right: 20,
+        bottom: 30,
+        left: 40
+    }
+
+    let barMaxWidth = width - margin.left - margin.right
+    let barHeight = height - margin.top - margin.bottom
+
+    let x = d3.scaleLinear()
+        .domain([0, 1])
+        .range([0, barMaxWidth])
+        //.nice()
+
+    let y = d3.scaleBand()
+        .domain(Object.keys(filedata))
+        .range([barHeight, 0])
+        .padding(0.1)
+
+    let svg = d3.select(".svg-content-responsive")
+
+    let bars = svg.selectAll(".bar")
+            .data(filearray)
+        .enter().append("rect")
+            .attr("class", d => `bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .attr("x", x(0))
+            .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
+            .attr("y", d => y(d.filename))
+            .attr("height", y.bandwidth())
+
 
 })
