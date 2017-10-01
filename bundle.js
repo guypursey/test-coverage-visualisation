@@ -6,38 +6,12 @@
 */
 const d3 = require("d3")
 const dispatch = d3.dispatch("load", "projectchange", "render")
+const parseData = require("./parseData.js")
+const createDataTree = parseData.createDataTree
+const traceLineage = parseData.traceLineage
 
 const width = window.innerWidth
 const height = window.innerHeight
-
-const createDataTree = filedata => {
-    let key
-    let tree = {}
-
-    let parseKey = function (root, key, dataObject) {
-        let dirname = (key.match(/^\w*\//) || [ "" ])[0]
-        let remainder = (key.match(/^\w*\/(.*)/) || [ "" ])[1]
-        if (dirname) {
-            root[dirname] = root[dirname] || {
-                "children": {},
-                "coveredLines": 0,
-                "totalLines": 0
-            }
-            root[dirname].children = parseKey(root[dirname].children, remainder, dataObject)
-            root[dirname].coveredLines += dataObject.coveredLines
-            root[dirname].totalLines += dataObject.totalLines
-        } else {
-            root[key] = dataObject
-        }
-        return root
-    }
-
-    for (key in filedata) {
-        parseKey(tree, key, filedata[key])
-    }
-    //console.log(tree)
-    return tree
-}
 
 d3.json("filelist.json", function (error, datafiles) {
     if (error) throw error
@@ -184,7 +158,7 @@ dispatch.on("render.coverage", function (filedata) {
 
 })
 
-},{"d3":2}],2:[function(require,module,exports){
+},{"./parseData.js":3,"d3":2}],2:[function(require,module,exports){
 // https://d3js.org Version 4.10.0. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -17095,5 +17069,53 @@ exports.zoomIdentity = identity$8;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+
+},{}],3:[function(require,module,exports){
+module.exports = (function () {
+
+    const createDataTree = filedata => {
+        let key
+        let tree = {}
+
+        let parseKey = function (root, key, signature, dataObject) {
+            let dirname = (key.match(/^\w*\//) || [ "" ])[0]
+            let remainder = (key.match(/^\w*\/(.*)/) || [ "" ])[1]
+            if (dirname) {
+                root[dirname] = root[dirname] || {
+                    "children": {},
+                    "coveredLines": 0,
+                    "totalLines": 0,
+                    "folder": true,
+                    "name": dirname,
+                    "pathname": `${signature}${dirname}`
+                }
+                root[dirname].children = parseKey(root[dirname].children, remainder, `${signature}${dirname}`, dataObject)
+                root[dirname].coveredLines += dataObject.coveredLines
+                root[dirname].totalLines += dataObject.totalLines
+            } else {
+                root[key] = {
+                    "coveredLines": dataObject.coveredLines,
+                    "totalLines": dataObject.totalLines,
+                    "folder": false,
+                    "name": key,
+                    "pathname": `${signature}${key}`
+                }
+            }
+
+            return root
+        }
+
+        for (key in filedata) {
+            parseKey(tree, key, "", filedata[key])
+        }
+
+        return tree
+    }
+
+    return {
+        createDataTree: createDataTree
+    }
+
+}())
 
 },{}]},{},[1]);

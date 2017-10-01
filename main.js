@@ -5,38 +5,12 @@
 */
 const d3 = require("d3")
 const dispatch = d3.dispatch("load", "projectchange", "render")
+const parseData = require("./parseData.js")
+const createDataTree = parseData.createDataTree
+const traceLineage = parseData.traceLineage
 
 const width = window.innerWidth
 const height = window.innerHeight
-
-const createDataTree = filedata => {
-    let key
-    let tree = {}
-
-    let parseKey = function (root, key, dataObject) {
-        let dirname = (key.match(/^\w*\//) || [ "" ])[0]
-        let remainder = (key.match(/^\w*\/(.*)/) || [ "" ])[1]
-        if (dirname) {
-            root[dirname] = root[dirname] || {
-                "children": {},
-                "coveredLines": 0,
-                "totalLines": 0
-            }
-            root[dirname].children = parseKey(root[dirname].children, remainder, dataObject)
-            root[dirname].coveredLines += dataObject.coveredLines
-            root[dirname].totalLines += dataObject.totalLines
-        } else {
-            root[key] = dataObject
-        }
-        return root
-    }
-
-    for (key in filedata) {
-        parseKey(tree, key, filedata[key])
-    }
-    //console.log(tree)
-    return tree
-}
 
 d3.json("filelist.json", function (error, datafiles) {
     if (error) throw error
