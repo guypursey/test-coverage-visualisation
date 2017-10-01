@@ -46,27 +46,17 @@ dispatch.on("load.menu", function (files) {
         select.property("value", file.filename)
 
         d3.json(`/data/${file.filename}`, function (error, data) {
-            dispatch.call("render", this, data)
+            let treedata = createDataTree(data)
+            dispatch.call("render", this, "/", treedata)
         })
     })
 
 })
 
-dispatch.on("render.coverage", function (filedata) {
-    console.log(filedata)
+dispatch.on("render.coverage", function (address, treedata) {
+    let targetdata = traceLineage(address, treedata)
 
-    let treedata = createDataTree(filedata)
-
-    console.log(treedata)
-
-    let key
-    let filearray = []
-    for (key in filedata) {
-        filedata[key].filename = key
-        filearray.push(filedata[key])
-    }
-
-    console.log(filearray)
+    let filearray = targetdata.ancestors.concat(targetdata.siblings)
 
     let margin = {
         top: 20,
@@ -101,8 +91,8 @@ dispatch.on("render.coverage", function (filedata) {
         //.nice()
 
     let y = d3.scaleBand()
-        .domain(Object.keys(filedata))
-        .range([requiredHeight, 0])
+        .domain(filearray.map(d => d.pathname))
+        .range([0, requiredHeight])
         .padding(1 / 2)
 
     let t = d3.transition()
@@ -118,18 +108,18 @@ dispatch.on("render.coverage", function (filedata) {
             .attr("width", x(0))
         .remove()
 
-    bars.attr("class", d => `update bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+    bars.attr("class", d => `update bar file${d.pathname.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
         .transition(t)
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
-            .attr("y", d => y(d.filename))
+            .attr("y", d => y(d.pathname))
             .attr("height", y.bandwidth())
 
     bars.enter()
         .append("rect")
-            .attr("class", d => `enter bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .attr("class", d => `enter bar file${d.pathname.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
             .attr("x", x(0))
             .attr("width", x(0))
-            .attr("y", d => y(d.filename))
+            .attr("y", d => y(d.pathname))
             .attr("height", y.bandwidth())
         .transition(t)
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
@@ -142,17 +132,17 @@ dispatch.on("render.coverage", function (filedata) {
         .classed("enter", false)
         .remove()
 
-    text.attr("class", d => `enter barlabel file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
-            .text(d => `${d.filename} (${d.coveredLines} / ${d.totalLines})`)
+    text.attr("class", d => `enter barlabel file${d.pathname.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .text(d => `${d.pathname} (${d.coveredLines} / ${d.totalLines})`)
         .transition(t)
-            .attr("y", d => y(d.filename) + (y.bandwidth() * 1.5))
+            .attr("y", d => y(d.pathname) + (y.bandwidth() * 1.5))
 
     text.enter()
         .append("text")
-            .attr("class", d => `enter barlabel file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .attr("class", d => `enter barlabel file${d.pathname.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
             .attr("x", x(0))
-            .attr("y", d => y(d.filename) + (y.bandwidth() * 1.5))
+            .attr("y", d => y(d.pathname) + (y.bandwidth() * 1.5))
         .transition(t)
-            .text(d => `${d.filename} (${d.coveredLines} / ${d.totalLines})`)
+            .text(d => `${d.pathname} (${d.coveredLines} / ${d.totalLines})`)
 
 })
