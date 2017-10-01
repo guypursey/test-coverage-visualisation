@@ -19,6 +19,8 @@ I spent longer than the 4 hours I intended on spend on this. This is partly down
 
 ### Saturday morning
 
+![/imgs/whiteboard-user-stories-thinking.jpg](I gave some thought to user stories first.)
+
 I spent about an hour in the morning, preparing.
 
  - Briefly sketched user requirements. (Some of this thinking and sketching happened in the build-up over the preceding days, as I finished other work.)
@@ -31,12 +33,16 @@ The issue with D3 and reporting it set me back somewhat, as did some issues with
 
 ### Saturday afternoon
 
+![/imgs/whiteboard-data-structure-scribbles.jpg](I did some rough scribbling of possible data structures to traverse but dived into code pretty quickly.)
+
 I spent a couple of hours in the afternoon working towards a first working iteration.
 
  - Built accessor for processing data.
  - Adding rendering for data.
 
 ### Sunday morning
+
+![/imgs/whiteboard-bar-height-handling-ancestry-siblings.jpg](I gave some thought to visual ideas and balance of elements to convey information.)
 
 I spent about an hour in the morning. By the end of the morning, I had gone past the four-hour mark but I had a roughly working prototype.
 
