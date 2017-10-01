@@ -1,0 +1,19 @@
+
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    vertical-align: top;
+}
+
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+
+.chart {
+	shape-rendering: crispEdges;
+	/* background-color: #000; */
+}
