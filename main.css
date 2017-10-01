@@ -17,3 +17,9 @@
 	shape-rendering: crispEdges;
 	/* background-color: #000; */
 }
+
+select {
+    font-size: 2em;
+    height: 10vh;
+    width: 98vw;
+}
