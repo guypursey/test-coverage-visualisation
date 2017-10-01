@@ -144,8 +144,7 @@ dispatch.on("render.coverage", function (filedata) {
             .attr("width", x(0))
         .remove()
 
-    bars.classed("update", true)
-        .classed("enter", false)
+    bars.attr("class", d => `update bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
         .transition(t)
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
             .attr("y", d => y(d.filename))
@@ -169,8 +168,8 @@ dispatch.on("render.coverage", function (filedata) {
         .classed("enter", false)
         .remove()
 
-    text.classed("update", true)
-        .classed("enter", false)
+    text.attr("class", d => `enter barlabel file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .text(d => `${d.filename} (${d.coveredLines} / ${d.totalLines})`)
         .transition(t)
             .attr("y", d => y(d.filename) + (y.bandwidth() * 1.5))
 
