@@ -147,7 +147,6 @@ dispatch.on("render.coverage", function (filedata) {
     bars.classed("update", true)
         .classed("enter", false)
         .transition(t)
-            .attr("x", x(0))
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
             .attr("y", d => y(d.filename))
             .attr("height", y.bandwidth())
@@ -162,5 +161,25 @@ dispatch.on("render.coverage", function (filedata) {
         .transition(t)
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
 
+    let text = svg.selectAll(".barlabel")
+        .data(filearray, d => d)
+
+    text.exit()
+        .classed("exit", true)
+        .classed("enter", false)
+        .remove()
+
+    text.classed("update", true)
+        .classed("enter", false)
+        .transition(t)
+            .attr("y", d => y(d.filename) + (y.bandwidth() * 1.5))
+
+    text.enter()
+        .append("text")
+            .attr("class", d => `enter barlabel file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .attr("x", x(0))
+            .attr("y", d => y(d.filename) + (y.bandwidth() * 1.5))
+        .transition(t)
+            .text(d => `${d.filename} (${d.coveredLines} / ${d.totalLines})`)
 
 })
