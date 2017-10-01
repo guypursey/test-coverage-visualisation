@@ -4,7 +4,9 @@ This repository represents code written as a quick proof-of-concept for visualis
 
  - You can see an in-browser demo at the [Blocks page for this visualisation](http://bl.ocks.org/guypursey/3d9c954aa0184abad08ee1c3d22793e5).
  - You can see the [Gist repo feeding the Blocks page](https://gist.github.com/guypursey/3d9c954aa0184abad08ee1c3d22793e5) for a simplified branch of the repository.
- - You can see the [GitHub repo of this visualisation code](https://github.com/guypursey/test-coverage-visualisation) for fuller history and also unit tests.
+ - You can see the [GitHub repo of this visualisation code](https://github.com/guypursey/test-coverage-visualisation) for fuller history and also unit tests and documentation.
+
+You can see the aforementioned [documentation of the project, plus a brief "developer diary"](https://github.com/guypursey/test-coverage-visualisation/tree/master/docs) within the GitHub repository's `docs` folder.
 
 ## Local usage
 
