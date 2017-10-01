@@ -58,7 +58,6 @@ dispatch.on("render.coverage", function (address, treedata) {
     let targetdata = traceLineage(address, treedata)
 
     let filearray = targetdata.ancestors.concat(targetdata.siblings)
-        //.sort((a, b) => a.generation > b.generation)
 
     let margin = {
         top: 20,
@@ -111,6 +110,9 @@ dispatch.on("render.coverage", function (address, treedata) {
         .remove()
 
     bars.attr("class", d => `update bar file${d.pathname.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+        .on("click", function (d) {
+            dispatch.call("render", this, d.pathname, treedata)
+        })
         .transition(t)
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
             .attr("y", d => y(d.pathname))
@@ -123,6 +125,9 @@ dispatch.on("render.coverage", function (address, treedata) {
             .attr("width", x(0))
             .attr("y", d => y(d.pathname))
             .attr("height", y.bandwidth())
+        .on("click", function (d) {
+            dispatch.call("render", this, d.pathname, treedata)
+        })
         .transition(t)
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
 
