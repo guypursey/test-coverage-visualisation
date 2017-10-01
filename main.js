@@ -45,7 +45,8 @@ dispatch.on("load.menu", function (files) {
         console.log("projectchange.menu trigger", file)
         select.property("value", file.filename)
 
-        d3.json(`/data_${file.filename}`, function (error, data) {
+        d3.json(`data_${file.filename}`, function (error, data) {
+            if (error) throw error
             let treedata = createDataTree(data)
             dispatch.call("render", this, "/", treedata)
         })
