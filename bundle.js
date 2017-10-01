@@ -105,6 +105,23 @@ dispatch.on("render.coverage", function (filedata) {
     let barMaxWidth = width - margin.left - margin.right
     let barHeight = height - margin.top - margin.bottom
 
+    let svg = d3.select(".svg-content-responsive")
+
+    let textLabel = svg.append("text")
+        .attr("x", -100)
+        .attr("y", -100)
+        .text("test text")
+
+    let labelHeight =  textLabel.node().getBBox().height
+
+    textLabel.remove()
+
+    let adjustedHeight = filearray.length * labelHeight * 3.5
+
+    let requiredHeight = Math.max(adjustedHeight, height)
+
+    svg.attr("viewBox", `0 0 ${width} ${requiredHeight}`)
+
     let x = d3.scaleLinear()
         .domain([0, 1])
         .range([0, barMaxWidth])
@@ -112,27 +129,39 @@ dispatch.on("render.coverage", function (filedata) {
 
     let y = d3.scaleBand()
         .domain(Object.keys(filedata))
-        .range([barHeight, 0])
-        .padding(0.1)
+        .range([requiredHeight, 0])
+        .padding(1 / 2)
 
-    let svg = d3.select(".svg-content-responsive")
+    let t = d3.transition()
+        .duration(750)
 
     let bars = svg.selectAll(".bar")
-            .data(filearray)
+            .data(filearray, d => d)
 
     bars.exit()
+        .classed("exit", true)
+        .classed("enter", false)
+        .transition(t)
+            .attr("width", x(0))
         .remove()
 
-    bars
-        .attr("y", d => y(d.filename))
-        .attr("height", y.bandwidth())
-
-    bars.enter().append("rect")
-            .attr("class", d => `bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+    bars.classed("update", true)
+        .classed("enter", false)
+        .transition(t)
             .attr("x", x(0))
             .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
             .attr("y", d => y(d.filename))
             .attr("height", y.bandwidth())
+
+    bars.enter()
+        .append("rect")
+            .attr("class", d => `enter bar file${d.filename.replace(/\//g, "__").replace(/\./g, "_").replace(/[^\w\d]/g, "-")}`)
+            .attr("x", x(0))
+            .attr("width", x(0))
+            .attr("y", d => y(d.filename))
+            .attr("height", y.bandwidth())
+        .transition(t)
+            .attr("width", d => x((1 / d.totalLines) * d.coveredLines))
 
 
 })
