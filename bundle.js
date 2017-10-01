@@ -13,7 +13,7 @@ const traceLineage = parseData.traceLineage
 const width = window.innerWidth
 const height = window.innerHeight
 
-d3.json("filelist.json", function (error, datafiles) {
+d3.json("data__filelist.json", function (error, datafiles) {
     if (error) throw error
 
     let filesObject = d3.map()
@@ -46,7 +46,7 @@ dispatch.on("load.menu", function (files) {
         console.log("projectchange.menu trigger", file)
         select.property("value", file.filename)
 
-        d3.json(`/data/${file.filename}`, function (error, data) {
+        d3.json(`/data_${file.filename}`, function (error, data) {
             let treedata = createDataTree(data)
             dispatch.call("render", this, "/", treedata)
         })
